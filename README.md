@@ -10,3 +10,7 @@ Professor: Dr. Michael Wand
 TA: Vincent Herrmann
 
 Required modules: python3, numpy
+
+Assignment: ml_2021_assignment_1.pdf
+
+Final report: MachineLearning.pdf
