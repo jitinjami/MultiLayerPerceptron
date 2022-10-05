@@ -1,49 +1,3 @@
-#!/usr/bin/env python3
-
-## In this assignment, you will learn how to train a model with early stopping with the simple machine learning
-## framework's help from the previous assignment. The intent is to show you how to train a machine learning model.
-## It is very similar to what you would do in a real ML framework.
-##
-## We provide some code to download and load MNIST digits. The MNIST comes with a separate test and training set, but
-## not a validation set. Your task is to split the official "train" set to train and validation set and train the
-## network with early stopping.
-##
-## Some notes:
-##  * an EPOCH is a pass through the whole training set once.
-##  * validation accuracy is the percentage of correctly classified digits on the validation set.
-##  * early stopping is when you avoid overfitting the model by measuring validation accuracy every N steps (e.g.,
-##    every epoch) and stopping your training when your model begins to worsen on the validation set. You can do that by
-##    keeping track of the best validation accuracy so far and its epoch, and stopping if the validation
-##    accuracy has not improved in the last M steps (e.g., last 10 epochs).
-##    (A better way to do this is to keep the weights of the best performing model, but that is harder since you need a
-##    way to save and reload weights of the model. We keep it simple instead and use the last, slightly worse model).
-##  * test accuracy is the percentage of correctly classified digits on the test set.
-##  * watch out: if you load batch_size of data by NumPy slicing, it is not guaranteed that you will actually get
-##    batch_size of them: if your array length is not divisable by batch_size, you will get the remainder as the last
-##    batch. Take that in account when calculating the percentages: use shape[0] to determine the real number of
-##    elements in the current batch of data.
-##  * verify() should be used both in the validate() and test() functions for error measurement
-##    without code duplication (just the input data should be different).
-##  * this is a 10-way classification task, so your network will have 10 outputs, one for each digit. It
-##    can be trained by Softmax nonlinearity followed by a Cross-Entropy loss function. So for every image, you get 10
-##    outputs. To figure out which one is the correct class, you should find which is the most active.
-##  * MNIST gives the labels as integers (e.g. 3, 0, 2, ...). For the Cross-Entropy loss function, you have to convert
-##    them into a one-hot format: [0., 0., 0., 1., 0., ...], [1., 0., 0., 0., 0., ...], [0., 0., 1., 0., 0., ...]. The
-##    output of the Softmax layer and the targets must have the same size.
-##  * MNIST comes with black-and-white binary images, with a background of 0 and foreground of 255. Each image is 28x28
-##    matrix. To feed that to the model, we flatten it to a 784 (28*28) length vector and normalize it by 255, so the
-##    backround becomes 0 and the foreground 1.0. Labels are integers between 0-9. You don't have to worry about this;
-##    it's already done for you. The networks usually like to receive an input in range -1 .. 1 or generally the mean
-##    near 0, and the standard deviation near 1 (as the majority of MNIST pixels is black, normalizing it to 0..1 range
-##    is good enough).
-##  * You have to have the previous task's solution in the same folder as this file, as it will load your previously
-##    implemented functions from there.
-##
-## Your final test accuracy should be close to 95% and should early stop after about 100 epochs.
-##
-## Scroll to the "# Nothing to do BEFORE this line." line, and let the fun begin! Good luck!
-
-
 import os
 from urllib import request
 import gzip
@@ -111,25 +65,15 @@ model = lib.Sequential([
     lib.Softmax()
 ])
 
-#######################################################################################################################
-# Nothing to do BEFORE this line.
-#######################################################################################################################
 
 indices = np.random.permutation(len(train_validation_set))
 
-## Implement
-## Hint: you should split indices to 2 parts: a training and a validation one. Later when loading a batch of data,
-## just iterate over those indices by loading "batch_size" of them at once, and load data from the dataset by
-## train_validation_set.images[your_indices[i: i+batch_size]] and
-## train_validation_set.labels[your_indices[i: i+batch_size]]
 
 total_len = len(indices)
 train_indices,validation_indices = np.split(indices, n_train)
 
-## End
 
 def verify(images: np.ndarray, targets: np.ndarray) -> Tuple[int, int]:
-    ## Implement
     results = model.forward(images)
     num_ok = 0
     total_num = targets.shape[0]
@@ -151,7 +95,6 @@ def test() -> float:
         images = test_set.images[i:i + batch_size]
         labels = test_set.labels[i:i + batch_size]
 
-        ## Implement. Use the verify() function to verify your data.
         num_ok, total_num = verify(images, labels)
 
         accu += num_ok #Accumulating number of correct predicions for every batch in test set
@@ -165,7 +108,6 @@ def validate() -> float:
     accu = 0.0
     count = 0
 
-    ## Implement. Use the verify() function to verify your data.
     for i in range(0, len(validation_indices), batch_size):
         images = test_set.images[i:i + batch_size]
         labels = test_set.labels[i:i + batch_size]
@@ -175,21 +117,13 @@ def validate() -> float:
 
         accu += num_ok #Accumulating number of correct predicions for every batch in validation set
         count += total_num
-        ## End
-
-    ## End
 
     return accu/count * 100.0
 
-
-## You should update these: best_validation_accuracy is the best validation set accuracy so far, best_epoch is the
-## epoch of this best validation accuracy (the later can be initialized by anything, as the accuracy will be for sure
-## better than 0, so it will be updated for sure).
 best_validation_accuracy = 0
 best_epoch = -1
 
 for epoch in range(1000):
-    ## Implement
     for i in range(0, len(train_indices), batch_size):
         images = test_set.images[i:i + batch_size]
         labels = test_set.labels[i:i + batch_size]
@@ -197,14 +131,8 @@ for epoch in range(1000):
         loss_value = lib.train_one_step(model, loss, learning_rate, images, labels)     #Train
     
     validation_accuracy = validate()
-    ## End
 
     print("Epoch %d: loss: %f, validation accuracy: %.2f%%" % (epoch, loss_value, validation_accuracy))
-
-    ## Implement
-    ## Hint: you should check if current accuracy is better that the best so far. If it is not, check before how many
-    ## iterations ago the best one came, and terminate if it is more than 10. Also update the best_* variables
-    ## if needed.
     if best_validation_accuracy < validation_accuracy:
         best_validation_accuracy = validation_accuracy
         best_epoch = epoch
@@ -212,10 +140,6 @@ for epoch in range(1000):
     else:
         if best_epoch <= epoch - 10: # Early stopping
             break
-
-
-
-    # end
 
 print("Test set performance: %.2f%%" % test())
 

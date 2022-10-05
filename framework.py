@@ -1,73 +1,3 @@
-#!/usr/bin/env python3
-
-## You will have to implement a very primitive machine learning framework. The skeleton is given. You have to fill the
-## blocks marked by "## Implement". The goal is to provide you an insight into how machine learning frameworks work
-## while practicing the most important details from the class.
-##
-## You have to implement the following modules (or call them layers?):
-##      * Activation functions: Tanh, Softmax
-##      * Layers: Linear, Sequential
-##      * Losses: Cross-Entropy
-##
-## The linear layer is also called perceptron, fully connected layer, etc. The bias term is not included in the
-## network weight matrix W because of performance reasons (concatenating the 1 to the input are slow). This is the case
-## for the real-world ML frameworks too.
-##
-## All the functions you have to implement has their signature pre-specified, with annotated types. You should _not_
-## change this, because it will be tested by an automated system which depends on the current interface.
-##
-## The sequential layer receives a list of layers for the constructor argument, and calls them in order on forward
-## and in reverse order on backward. It is just syntactic sugar that makes the code much nicer. For example, you can
-## create a two-layer neural network with tanh activation functions with net = Sequential([Linear(5, 8), Tanh(),
-## Linear(8, 3), Tanh()]) and then run a forward pass using output = net.forward(your data).
-##
-## All the modules have a forward() and a backward() function. forward() receives one argument (except for the loss) and
-## returns that layer's output. The backward() receives the dL/dout, flowing back on the output of the layer, and
-## should return a BackwardResult object with the following fields:
-##      variable_grads: a dict of gradients, where the keys are the same as in the keys in the layer's .var. The
-##                      values are numpy arrays representing the gradient for that variable.
-##      input_grads: a numpy array representing the gradient for the input (that was passed to the layer in the forward
-##                   pass).
-##
-## The backward() does not receive the forward pass's input, although it might be needed for the gradient
-## calculation. You should save them in the forward pass for later use in the backward pass. You don't have to worry
-## about most of this, as it is already implemented in the skeleton. There are 2 important takeaways: you have to
-## calculate the gradient of both of your variables and the layer input in the backward pass, and if you need to reuse
-## the input from the forward pass, you need to save it.
-##
-## You will also have to implement the function train_one_step(), which does one step of weight update based on the
-## training data and the learning rate. It should run backpropagation, followed by gradient descent.
-##
-## Optionally you can implement gradient checking, enabling you to be almost sure that your backward functions are
-## correct. To do this, you will have to fill in the analytic and numerical gradient computation part of the
-## gradient_check() function. This does iterates over all the elements of all variables, nudges it a bit in both
-## directions, and recalculates the network output. Based on that, you can calculate what the gradient should be if we
-## assume that the forward pass is correct. The method is known as numerical differentiation, specifically the
-## symmetric difference quotient. If your gradient checking passes and your error is around 0.008, your solution is
-## probably correct. It's worth trying to intentionally corrupt the backward of some module (for example, Tanh) by a
-## tiny bit (~0.01) and see if the grad check fails. If not, your grad check might be wrong.
-##
-## Finally, you would have to complete the create_network() function, which should return a Sequential neural network of
-## 3 layers: a tanh input layer with 2 inputs and 50 outputs, a tanh hidden layer with 30 outputs, and finally a softmax
-## output layer with 2 outputs (usually for two-way classification we don't use softmax, but we will need it for the
-## MNIST part anyway, so we use it here as well).
-##
-## At the end of the training, your loss should be around 0.05. Don't be afraid if it differs a bit, but a
-## significantly higher value may indicate a problem.
-##
-## There are asserts at many points in the code there that will check the shapes of the gradients. Remember: the
-## gradient for a variable must have the same shape as the variable itself. Imagine the variables and the network
-## inputs/outputs as a cable with a given number of wires: no matter in which direction you pass the data, the number
-## of wires is the same.
-##
-## Please do your calculations in a vectorized way. Otherwise, it will be painfully slow. You have to use for loop only
-## twice in this file.
-##
-## Please install the dependencies needed for this script with pip3 -r requirements.txt
-##
-## Good luck, I hope you'll enjoy it :)!
-
-
 import numpy as np
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
@@ -358,11 +288,6 @@ def gradient_check():
         all_succeeded = all_succeeded and success
 
     return all_succeeded
-
-
-###############################################################################################################
-# Nothing to do past this line.
-###############################################################################################################
 
 if __name__ == "__main__":
     import matplotlib
